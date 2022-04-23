@@ -4,11 +4,13 @@ import { MoreVert } from "@mui/icons-material"
 
 import {Users} from "../../dummyData"
 
+
 export default function Post({post}) {
     
     //using state hooks
     const [like,setLike] = useState(post.like)
     const [isLiked , setisLiked] = useState(false)
+    const PF = process.env.REACT_APP_PUBLIC_FOLDER
 
     //defining handlers
     const likeHandler  =()=>{
@@ -33,13 +35,13 @@ export default function Post({post}) {
 
             <div className="postCenter">
                 <span className="postText">{post?.desc}</span>
-                <img src={post.photo} alt="Not found" className="postImg" />
+                <img src={PF+post.photo} alt="" className="postImg" />
             </div>
             
             <div className="postBottom">
                 <div className="postBottomLeft">
-                    <img src="/assets/like.png" alt="Null" onClick={likeHandler} className="likeIcon" />
-                    <img src="/assets/heart.png" alt="Null" onClick={likeHandler} className="likeIcon" />
+                    <img src={`${PF}/like.png`} alt="Null" onClick={likeHandler} className="likeIcon" />
+                    <img src={`${PF}/heart.png`} alt="Null" onClick={likeHandler} className="likeIcon" />
                     <span className="postLikeCounter">{like} people reacted </span>
                 </div>
                 <div className="postBottomRight">
