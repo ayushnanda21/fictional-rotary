@@ -23,7 +23,7 @@ export default function Feed() {
 
         {/* Dynamic Data loading using maps */}
         {posts.map((p)=> (
-          <Post key ={p.id} post={p} />
+          <Post key ={p._id} post={p} />
         ))}
         
       </div>
