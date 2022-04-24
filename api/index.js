@@ -5,6 +5,8 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const helmet =require("helmet");
 const morgan =require("morgan");
+const cors = require('cors')
+
 
 //acquiring routes
 const userRoute = require("./routes/users");
@@ -13,6 +15,8 @@ const postRoute = require("./routes/posts");
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cors());
+
 
 //db connection
 mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true},function(err){
