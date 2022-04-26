@@ -5,7 +5,9 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const helmet =require("helmet");
 const morgan =require("morgan");
-const cors = require('cors')
+const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
 
 
 //acquiring routes
@@ -16,6 +18,10 @@ const postRoute = require("./routes/posts");
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
+
+
+
+
 
 
 //db connection
@@ -29,12 +35,32 @@ mongoose.connect(process.env.MONGO_URL, {useNewUrlParser: true},function(err){
 });
 
 //middlewares
+app.use("/images", express.static(path.join(__dirname, "public/images")));
 app.use(express.json());
 app.use(helmet());
 app.use(morgan("common"));
 app.use("/api/users", userRoute);
 app.use("/api/auth",authRoute);
 app.use("/api/posts",postRoute);
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "public/images");
+    },
+    filename: (req, file, cb) => {
+      cb(null, req.body.name);
+    },
+  });
+  
+  const upload = multer({ storage: storage });
+  app.post("/api/upload", upload.single("file"), (req, res) => {
+    try {
+      return res.status(200).json("File uploded successfully");
+    } catch (error) {
+      console.error(error);
+    }
+  });
+  
 
 //server listening port
 app.listen(process.env.PORT || 5000, function(req,res){
