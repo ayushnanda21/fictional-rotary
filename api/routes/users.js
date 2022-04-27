@@ -52,6 +52,8 @@ router.delete("/:id",async (req,res)=>{
 
 });
 
+
+
 //get user route
 //lh:8800/users/?userId=469746746
 //lh:8800/users/?username=john
@@ -71,6 +73,25 @@ router.get("/", async (req, res) => {
     }
   });
 
+  //get friends
+router.get("/friends/:userId", async (req,res)=>{
+    try{
+        const user  =await User.findById(req.params.userId);
+        const friends = await Promise.all(
+            user.followings.map(friendsId=>{
+                return User.findById(friendsId)
+            })
+        )
+        let friendList= [];
+        friends.map(friend=>{
+            const {_id, username,profilePicture} = friend;
+            friendList.push({_id, username,profilePicture});
+        });
+        res.status(200).json(friendList);
+    } catch(err){
+        res.status(500).json(err);
+    }
+})
 
 //follow a user route
 
