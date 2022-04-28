@@ -16,6 +16,7 @@ export default function Messenger() {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("")
     const {user} = useContext(AuthContext);
+    const scrollRef = useRef();
   
 
     useEffect(() => {
@@ -59,6 +60,11 @@ export default function Messenger() {
     }
 
   }
+
+  //automatic chat window scroll using useRef()
+  useEffect(()=>{
+    scrollRef.current?.scrollIntoView({behaviour : "smooth"})
+  },[messages])
   
 
   return (
@@ -81,9 +87,11 @@ export default function Messenger() {
                     currentChat ? (
                 <>
                 <div className="chatBoxTop">
+                    <div ref={scrollRef}>
                     {messages.map((m)=>(
                         <Message message={m} own={m.sender ===user._id } />
                     ))}
+                    </div>
                    
                 </div>
                 <div className="chatBoxBottom">
