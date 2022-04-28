@@ -7,12 +7,14 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 
+
 export default function Messenger() {
 
      //grabbing current user
     const [conversations, setConversations] = useState([]);
     const [currentChat , setCurrentChat] = useState(null);
-    const [messages, setMessages] = useState([])
+    const [messages, setMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState("")
     const {user} = useContext(AuthContext);
   
 
@@ -41,6 +43,22 @@ export default function Messenger() {
         getMessages();
   },[currentChat])
 
+  const handleSubmit = async (e)=>{
+    e.preventDefault();
+    const message = {
+        sender : user._id,
+        text: newMessage,
+        conversationId: currentChat._id
+    };
+    try{
+        const res = await axios.post("/messages", message);
+        setMessages([...messages, res.data])
+        setNewMessage("")
+    }catch(err){
+        console.log(err);
+    }
+
+  }
   
 
   return (
@@ -69,8 +87,8 @@ export default function Messenger() {
                    
                 </div>
                 <div className="chatBoxBottom">
-                    <textarea placeholder='Write something' className='chatMessageInput'></textarea>
-                    <button className="chatSubmitButton">Send</button>
+                    <textarea placeholder='Write something' className='chatMessageInput' onChange={(e)=> setNewMessage(e.target.value)} value={newMessage} ></textarea>
+                    <button className="chatSubmitButton" onClick={handleSubmit} >Send</button>
                 </div>  </> ):( <span className="noConversationText">Open a conversation to start chat </span> )}   
             </div>
         </div>
