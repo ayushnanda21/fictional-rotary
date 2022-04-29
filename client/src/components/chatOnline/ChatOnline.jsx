@@ -1,31 +1,53 @@
 import React from 'react'
 import "./chatOnline.css"
+import { useState } from 'react'
+import { useEffect } from 'react';
+import axios from 'axios';
 
-export default function ChatOnline() {
+export default function ChatOnline({onlineUsers, currentId, setCurrentChat}){
+
+    const[friends, setFriends] = useState([])
+    const[onlineFriends, setOnlineFriends] = useState([]);
+    const PF  = process.env.REACT_APP_PUBLIC_FOLDER
+
+    useEffect(() => {
+        const getFriends = async () => {
+          const res = await axios.get("/users/friends/" + currentId);
+          setFriends(res.data);
+        };
+    
+        getFriends();
+      }, [currentId]);
+
+      console.log(friends)
+
+      useEffect(() => {
+        setOnlineFriends(friends.filter((f) => onlineUsers.includes(f._id)));
+      }, [friends, onlineUsers]);
+
+      const handleClick= async ({user})=>{
+            try{
+                const res = await axios.get(`/conversations/find/${currentId}/${user._id}`);
+                setCurrentChat(res.data);
+            }catch(err){
+                console.log(err);
+            }
+      }
+
+
   return (
     <div className="chatOnline">
-        <div className="chatOnlineFriend">
-            <div className="chatOnlineImgContainer">
-            <img src="https://www.etestware.com/wp-content/uploads/2020/08/shutterstock_515285995-1200x580.jpg" alt="" className="chatOnlineImg" />
-                <div className="chatOnlineBadge"></div>
-            </div>
-            <span className="chatOnlineName">John Doe</span>
-        </div>
+        {onlineFriends.map((o)=>{
 
-        <div className="chatOnlineFriend">
+       
+        <div className="chatOnlineFriend" onClick={()=>handleClick(o)}>
             <div className="chatOnlineImgContainer">
-            <img src="https://www.etestware.com/wp-content/uploads/2020/08/shutterstock_515285995-1200x580.jpg" alt="" className="chatOnlineImg" />
+            <img src={o?.profilePicture ? PF + o.profilePicture : PF+ "person/noAvatar.png"} alt="" className="chatOnlineImg" />
                 <div className="chatOnlineBadge"></div>
             </div>
-            <span className="chatOnlineName">John Doe</span>
+            <span className="chatOnlineName">{o.username}</span>
         </div>
-        <div className="chatOnlineFriend">
-            <div className="chatOnlineImgContainer">
-            <img src="https://www.etestware.com/wp-content/uploads/2020/08/shutterstock_515285995-1200x580.jpg" alt="" className="chatOnlineImg" />
-                <div className="chatOnlineBadge"></div>
-            </div>
-            <span className="chatOnlineName">John Doe</span>
-        </div>
+         })}
     </div>
   )
 }
